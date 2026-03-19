@@ -25,7 +25,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   }
 
   Future<void> _onFetchProducts(FetchProducts event, Emitter<ProductState> emit) async {
-    // Зупиняємо запити, якщо вже досягли кінця списку і не використовуємо фільтри
     if (state is ProductLoaded &&
         (state as ProductLoaded).hasReachedMax &&
         (state as ProductLoaded).category.isEmpty &&
@@ -34,7 +33,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     }
 
     try {
-      // 1. Початкове завантаження
       if (state is ProductInitial ||
           state is ProductError ||
           (state is ProductLoaded && ((state as ProductLoaded).category.isNotEmpty || (state as ProductLoaded).searchQuery.isNotEmpty))) {
@@ -43,7 +41,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         emit(ProductLoading());
 
         try {
-          // Спроба завантажити свіжі дані з мережі
           final response = await repository.getProducts(limit: _limit, skip: 0);
           final categories = existingCategories.isEmpty ? await repository.getCategories() : existingCategories;
 
@@ -54,28 +51,26 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
               products: response.products,
               categories: categories,
               hasReachedMax: response.products.length >= response.total,
-              isCached: false, // Це свіжі дані
+              isCached: false,
             ));
           }
         } catch (networkError) {
-          // ФОЛЛБЕК НА КЕШ: Якщо мережа недоступна, намагаємось дістати локальні дані
           try {
             final cachedResponse = await repository.getProducts(limit: _limit, skip: 0);
             emit(ProductLoaded(
               products: cachedResponse.products,
               categories: existingCategories,
-              hasReachedMax: true, // В офлайні вимикаємо пагінацію
-              isCached: true, // Сигналізуємо UI, що це кеш!
+              hasReachedMax: true,
+              isCached: true,
             ));
           } catch (cacheError) {
             emit(const ProductError('No internet connection and no cached data available.'));
           }
         }
       }
-      // 2. Пагінація (завантаження наступної сторінки)
       else if (state is ProductLoaded) {
         final currentState = state as ProductLoaded;
-        if (currentState.isCached) return; // Не робимо пагінацію в офлайн режимі
+        if (currentState.isCached) return;
 
         final response = await repository.getProducts(limit: _limit, skip: currentState.products.length);
 
@@ -113,7 +108,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
           products: response.products,
           categories: currentCategories,
           searchQuery: event.query,
-          hasReachedMax: true, // Пошук віддає все одразу, пагінація не потрібна
+          hasReachedMax: true,
         ));
       }
     } catch (e) {

@@ -63,7 +63,7 @@ void main() {
         ProductLoaded(
           products: [tProduct],
           categories: const ['Category'],
-          hasReachedMax: true, // Оскільки total = 1, а ми завантажили 1
+          hasReachedMax: true,
         ),
       ],
     );

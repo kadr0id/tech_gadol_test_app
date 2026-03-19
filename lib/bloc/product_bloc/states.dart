@@ -28,7 +28,7 @@ class ProductLoaded extends ProductState {
   final bool hasReachedMax;
   final String searchQuery;
   final String category;
-  final bool isCached; // Вказує, чи дані завантажені з локального кешу (офлайн)
+  final bool isCached;
 
   const ProductLoaded({
     required this.products,

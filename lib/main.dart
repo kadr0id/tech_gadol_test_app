@@ -9,12 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 void main() async {
-  // Обов'язково викликаємо перед асинхронним кодом у main()
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Ініціалізуємо локальне сховище для кешування (Enhancement B)
   final prefs = await SharedPreferences.getInstance();
-
   runApp(MyApp(prefs: prefs));
 }
 
@@ -33,24 +29,20 @@ class MyApp extends StatelessWidget {
       ],
       child: MultiBlocProvider(
         providers: [
-          // Провайдер для управління світлою/темною темою
           BlocProvider<ThemeCubit>(create: (context) => ThemeCubit()),
-
-          // Головний Bloc продуктів. Одразу запускаємо завантаження
           BlocProvider<ProductBloc>(
             create: (context) => ProductBloc(
               repository: context.read<ProductRepository>(),
             )..add(FetchProducts()),
           ),
         ],
-        // BlocBuilder слухає зміни теми і оновлює MaterialApp
         child: BlocBuilder<ThemeCubit, ThemeMode>(
           builder: (context, themeMode) {
             return MaterialApp.router(
               title: 'TechGadol Catalog',
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
-              themeMode: themeMode, // Застосовуємо тему з Cubit
+              themeMode: themeMode,
               routerConfig: appRouter,
               debugShowCheckedModeBanner: false,
             );

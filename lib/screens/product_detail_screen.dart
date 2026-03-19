@@ -10,14 +10,13 @@ class ProductDetailScreen extends StatelessWidget {
 
   const ProductDetailScreen({super.key, required this.productId});
 
-  // Допоміжний метод для пошуку продукту в кеші (стейті списку)
   Product? _findProductInState(BuildContext context) {
     final state = context.read<ProductBloc>().state;
     if (state is ProductLoaded) {
       try {
         return state.products.firstWhere((p) => p.id == productId);
       } catch (_) {
-        return null; // Продукт не знайдено в списку
+        return null;
       }
     }
     return null;
@@ -193,7 +192,7 @@ class ProductDetailScreen extends StatelessWidget {
           ],
         ),
       ),
-      // Кнопка знизу екрана
+
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -205,7 +204,7 @@ class ProductDetailScreen extends StatelessWidget {
                           content: Text('${product.title} added to cart!')),
                     );
                   }
-                : null, // Кнопка неактивна, якщо товару немає на складі
+                : null,
             style: ElevatedButton.styleFrom(minimumSize: const Size.square(50)),
             child: const Text('Add to Cart'),
           ),

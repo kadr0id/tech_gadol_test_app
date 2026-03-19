@@ -67,7 +67,7 @@ class ComponentShowcaseScreen extends StatelessWidget {
 
           _buildSectionTitle(context, 'Product Card (Out of Stock / Error Data)'),
           ProductCard(
-            product: _getDummyProduct(price: -1.0), // Негативна ціна для перевірки валідації
+            product: _getDummyProduct(price: -1.0),
             onTap: () {},
           ),
           const SizedBox(height: 40),
